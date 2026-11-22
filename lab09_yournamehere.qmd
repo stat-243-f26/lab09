@@ -1,0 +1,108 @@
+---
+title: "Regression and Classification Trees"
+subtitle: "Stat 243: Lab 9"
+author: "Insert Your Name Here"
+format: pdf
+editor: source
+---
+
+## Due: Friday, Dec 4th, 11am PT.
+
+## Instructions
+
+Problem sets are a (nearly) weekly opportunity to engage with ideas relevant to content taught so far in the course. As your are working through your problem set, make sure to "Render" the document early and often. Take a look at the PDF output, as this is what you will turn in on Gradescope. Make sure the output is fully readable and is something that you are proud of. Take care to make sure code, writing, and headers are formatted neatly and presentably. 
+
+## Collaborators
+
+I collaborated with... (list names of collaborators here).
+
+
+## Goals of this problem set
+
+* Practice fitting trees and ensemble models in regression and classification problems.
+
+**You are not allowed to use any generative AI models (like ChatGPT) on your problem set.**
+
+**The Honor Principle must guide your work on this problem set.**
+
+
+
+## Problem 0: Load packages
+
+Load any relevant packages needed for this problem set. I got you started.
+
+
+```{r}
+library(tidyverse)
+library(tidyverse)
+library(ISLR2)
+library(moderndive)
+library(gridExtra)
+library(gbm)
+library(glmnet)
+library(rpart)
+library(rpart.plot)
+library(randomForest)
+library(gbm)
+```
+
+
+## Problem 1: Classification Trees
+
+In this problem, we will create a classification tree to predict a diagnosis for breast cancer as either malignant (i.e., harmful, cancerous) or benign (i.e., not cancerous). To build such a model, we will use data from a 1993 study of image data on breast tumors in which "features" (i.e., predictors) were extracted from the images, as well as a diagnosis made by a medical professional. You can load the training data by running the following code chunk. 
+
+```{r}
+wdbc <- read.csv("https://raw.githubusercontent.com/pearce790/Math141/refs/heads/main/wdbc.csv")[,-1]
+wdbc_test <- read.csv("https://raw.githubusercontent.com/pearce790/Math141/refs/heads/main/wdbc_test.csv")[,-1]
+```
+
+There are 419 observations. For each, we have a `Diagnosis` and 30 other unnamed predictors variables. The data source and original study can be found [here](https://archive.ics.uci.edu/dataset/17/breast+cancer+wisconsin+diagnostic) and [here](https://www.semanticscholar.org/paper/Nuclear-feature-extraction-for-breast-tumor-Street-Wolberg/53f0fbb425bc14468eb3bf96b2e1d41ba8087f36). *As a final disclaimer, I do not condone the blind use of statistical models to make medical decisions! Such models may be useful but should, in nearly all contexts, aide the decision-making of a medical professional and not replace their expertise entirely.*
+
+
+a.  Fit a *deep* tree to the training data (`deep_tree`) and *plot* the tree.
+
+b.  Prune `deep_tree` (`pruned_tree`) appropriately. Justify the way you pruned your tree using an appropriate plot.
+
+c.  Misdiagnosing a malignant tumor as benign has potentially devastating implications (i.e., falsely telling someone they're healthy when, in fact, they require medical attention for a life-threatening condition). Fit a tree model to your training data that penalizes mistakes of this kind 10 times more than the other type of misdiagnosis (`loss_tree`)
+
+d.  We now have three tree models: `deep_tree`, `pruned_tree`, and `loss_tree`. For each, create a confusion matrix and calculate the incorrect classification error rate *based on the test data* (`wdbc_test`) to assess the accuracy of each model when applied to new patients.
+
+e.  Comment on your results from part d. Which model has the lowest test error? Are the rates of "devastatingly bad" misdiagnoses substantially different between the models? Which model would you prefer?
+
+
+
+
+## Problem 2: Comparing Regression Models with `College` Data
+
+For this exercise, we will use the `College` data from the ISLR package. Familiarize yourself with this dataset before performing analysis. We will attempt to predict the `Outstate` variable, which indicates the college's out-of-state tuition rate in 1995. Load the data with the following code, which also creates a 70-30% training-test split.
+
+```{r}
+data("College")
+set.seed(1)
+which_train <- sample(1:nrow(College),0.7*nrow(College))
+college_train <- College[which_train,]
+college_test <- College[-which_train,]
+```
+
+a.  Create the following **five** models on the training data and tune the relevant tuning parameters (e.g., $\alpha$ in tree-based methods) using cross-validation.
+
+  - A well-tuned LASSO model
+  - A pruned regression tree (no bagging, boosting, or random forests)
+  - A `randomForest()` model that performs only bagging and no actual random forests (recall that bagging is the special case of random forests with $m = p$). 
+  - A `randomForest()` model that uses $m = p/3$.
+  - A well-tuned boosted tree model.
+
+b.  Calculate the test RMSE for each model and compare. Which model performs best on test data? 
+
+c.  For the first two models, which features were utilized?
+
+d.  For the ensemble models, display variable importance plots. Which variable is *most* important in each model?
+
+e.  Summarize what you learned while completing this problem *using non-technical language* that could be understood by someone working in the Admissions office at Reed College.
+
+
+
+
+
+
+
